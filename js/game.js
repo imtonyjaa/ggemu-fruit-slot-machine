@@ -35605,10 +35605,19 @@ SceneGame.prototype = {
         nWasLastFreeSpin = nWasFreeSpin = !1;
         SceneGame.instance.StartSpinningCallback()
     },
+    UseBagCoins: function (a) {
+        try {
+            if (typeof window.GGEMU !== 'undefined' && window.GGEMU.useBagCoins)
+                window.GGEMU.useBagCoins(a).catch(function () { })
+        } catch (e) {
+            console.warn(e)
+        }
+    },
     StartSpinningCallback: function (a) {
         void 0 == a && (a = !1);
         if (!bDrummsSpinning) {
             if (!a && iCoinsValue < iTotalValue) {
+                SceneGame.instance.UseBagCoins(iTotalValue);
                 console.warn("金币不足，无法 SPIN");
                 return;
             }
@@ -35621,7 +35630,7 @@ SceneGame.prototype = {
                     drummSpeedDelay[c] = b,
                     b += 410);
             a || (iCoinsValue -= iTotalValue,
-                (function () { try { if (typeof window.GGEMU !== 'undefined' && window.GGEMU.useBagCoins) window.GGEMU.useBagCoins(iTotalValue).catch(function () { }); } catch (e) { console.warn(e); } })(),
+                SceneGame.instance.UseBagCoins(iTotalValue),
                 iCoinsDec = Math.ceil((iShowedCoinsValue - iCoinsValue) / 40),
                 gameState.saveProfile());
             SceneGame.instance.HighlightButtons([btnGameLine, btnGameDecCoins, btnGameIncCoins, btnGameSpin], !0);
